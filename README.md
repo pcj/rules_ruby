@@ -95,6 +95,9 @@ ruby_library(name, deps, srcs, data, compatible_with, deprecation, distribs, fea
         <p>
           List of paths to be added to <code>$LOAD_PATH</code> at runtime.
           The paths must be relative to the the workspace which this rule belongs to.            
+          If you need a package-relative include path, use the special syntax 
+          `{package}/my-include-path` (string must begin with the token `{package}`) 
+          and the token `{package}` will be replaced with the value from `ctx.label.package`.
         </p>
       </td>
     </tr>

@@ -41,9 +41,16 @@ def transitive_deps(ctx, extra_files=[], extra_deps=[]):
       transitive_files = depset(transitive = deps.data_files),
       collect_data = True,
   )
-  includes = [
-      "../%s/%s" % (ctx.workspace_name, inc) for inc in ctx.attr.includes
-  ]
+  includes = []
+  for inc in ctx.attr.includes:
+      if inc.startswith("{package}"):
+          # Create a package-relative include path
+          include = inc.replace("{package}", ctx.label.package)
+      else:
+          # Create a workspace-relative include path (traditional behavior)
+          include = "../%s/%s" % (ctx.workspace_name, inc)
+      includes.append(include)
+    
   return struct(
       srcs = depset(
           direct = ctx.files.srcs,
