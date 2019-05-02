@@ -65,7 +65,6 @@ _ATTRS = {
     "rubyopt": attr.string_list(),
     "data": attr.label_list(
         allow_files = True,
-        cfg = "data",
     ),
     "main": attr.label(
         allow_single_file = True,
