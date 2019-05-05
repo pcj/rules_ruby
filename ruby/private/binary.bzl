@@ -10,7 +10,7 @@ load(
 def _ruby_binary_impl(ctx):
   sdk = ctx.attr.toolchain[platform_common.ToolchainInfo]
   interpreter = sdk.interpreter[DefaultInfo].files_to_run.executable
-  init_files = [f for t in sdk.init_files for f in t.files]
+  init_files = [f for t in sdk.init_files for f in t.files.to_list()]
   init_flags = " ".join(["-r%s" % f.short_path for f in init_files])
 
   main = ctx.file.main
@@ -37,11 +37,15 @@ def _ruby_binary_impl(ctx):
   rubyopt = reversed(deps.rubyopt.to_list())
   rubyopt += ["-I%s" % inc for inc in deps.incpaths.to_list()]
 
+  interpreter_path = interpreter.short_path
+  if interpreter_path.startswith("../"):
+      interpreter_path = interpreter_path.replace("../", "./external/")
+  print("interpreter show path: %s", interpreter.short_path)
   ctx.actions.expand_template(
       template = ctx.file._wrapper_template,
       output = executable,
       substitutions = {
-          "{interpreter}": interpreter.short_path,
+          "{interpreter}": interpreter_path,
           "{init_flags}": init_flags,
           "{rubyopt}": " ".join(rubyopt),
           "{main}": main.short_path,
